@@ -15,6 +15,7 @@ namespace AiderApp
 
         public Form1()
         {
+            //this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             InitializeComponent();
         }
 
@@ -45,7 +46,22 @@ namespace AiderApp
 
         private void button1_Click(object sender, EventArgs e)
         {
+            MessageBox.Show("Output");
+        }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
         }
     }
 }
