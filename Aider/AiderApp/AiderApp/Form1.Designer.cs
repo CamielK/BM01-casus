@@ -42,7 +42,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 389);
+            this.label2.Location = new System.Drawing.Point(296, 40);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(55, 13);
             this.label2.TabIndex = 2;
@@ -52,7 +52,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 474);
+            this.label3.Location = new System.Drawing.Point(296, 128);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(86, 13);
             this.label3.TabIndex = 2;
@@ -61,16 +61,16 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(118, 474);
+            this.textBox1.Location = new System.Drawing.Point(388, 125);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(106, 20);
+            this.textBox1.Size = new System.Drawing.Size(151, 20);
             this.textBox1.TabIndex = 4;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(425, 486);
+            this.button1.Location = new System.Drawing.Point(388, 151);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(151, 41);
             this.button1.TabIndex = 6;
             this.button1.Text = "Zoek!";
             this.button1.UseVisualStyleBackColor = true;
@@ -93,7 +93,7 @@
             "Strafrecht",
             "Huwelijk",
             "Grensconflict"});
-            this.checkedListBox1.Location = new System.Drawing.Point(73, 389);
+            this.checkedListBox1.Location = new System.Drawing.Point(388, 40);
             this.checkedListBox1.Name = "checkedListBox1";
             this.checkedListBox1.Size = new System.Drawing.Size(151, 79);
             this.checkedListBox1.TabIndex = 8;
@@ -101,9 +101,9 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(-5, -1);
+            this.pictureBox1.Location = new System.Drawing.Point(-5, 40);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(600, 309);
+            this.pictureBox1.Size = new System.Drawing.Size(283, 487);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 10;
             this.pictureBox1.TabStop = false;
@@ -121,6 +121,8 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximumSize = new System.Drawing.Size(609, 558);
+            this.MinimumSize = new System.Drawing.Size(609, 558);
             this.Name = "Form1";
             this.Text = "Aider";
             this.Load += new System.EventHandler(this.Form1_Load);
