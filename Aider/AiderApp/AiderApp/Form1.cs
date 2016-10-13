@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace AiderApp
 {
@@ -44,10 +46,26 @@ namespace AiderApp
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(this.textBox1.Text);
+            
 
+            var requestUrl = "http://37.97.195.239/bm01/api.php/search/" + this.textBox1.Text;
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(requestUrl);
+
+            httpWebRequest.ContentType = "application/json; charset=utf8";
+            httpWebRequest.Accept = "*/*";
+            httpWebRequest.Method = "GET";
+
+            using (var response = (HttpWebResponse)(await httpWebRequest.GetResponseAsync()))
+            {
+                using (var streamReader = new StreamReader(response.GetResponseStream()))
+                {
+                    string streamData = streamReader.ReadToEnd();
+
+                    MessageBox.Show(streamData);
+                }
+            }
 
 
         }
