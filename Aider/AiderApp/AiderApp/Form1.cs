@@ -46,7 +46,10 @@ namespace AiderApp
 
         private void button1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Output");
+            MessageBox.Show(this.textBox1.Text);
+
+
+
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -62,6 +65,11 @@ namespace AiderApp
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
