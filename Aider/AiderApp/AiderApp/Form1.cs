@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using System.Windows.Forms;
 using System.IO;
 
@@ -14,11 +15,13 @@ namespace AiderApp
 {
     public partial class Form1 : Form
     {
+       
 
         public Form1()
         {
             //this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             InitializeComponent();
+            panel1.Visible = false;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -64,6 +67,16 @@ namespace AiderApp
                     string streamData = streamReader.ReadToEnd();
 
                     MessageBox.Show(streamData);
+
+                    JObject data = JObject.Parse(streamData);
+
+                    if (data["law_articles"] != null && data["law_articles"].Any())
+                    {
+
+                        label1.Text = data["law_articles"][1]["article_text"].ToString();
+
+                        panel1.Visible = true;
+                    }
                 }
             }
 
@@ -86,6 +99,11 @@ namespace AiderApp
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
         {
 
         }
