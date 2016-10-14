@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.Windows.Forms;
 using System.IO;
+using AiderApp.Controllers;
 
 namespace AiderApp
 {
@@ -51,35 +52,25 @@ namespace AiderApp
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            
 
-            var requestUrl = "http://37.97.195.239/bm01/api.php/search/" + this.textBox1.Text;
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create(requestUrl);
+            SearchController _controller = new SearchController();
 
-            httpWebRequest.ContentType = "application/json; charset=utf8";
-            httpWebRequest.Accept = "*/*";
-            httpWebRequest.Method = "GET";
-
-            using (var response = (HttpWebResponse)(await httpWebRequest.GetResponseAsync()))
+            _controller.SearchLaws(this.textBox1.Text);
+            _controller.UpdateView += delegate (JObject data)
             {
-                using (var streamReader = new StreamReader(response.GetResponseStream()))
+                if (data["law_articles"] != null && data["law_articles"].Any())
                 {
-                    string streamData = streamReader.ReadToEnd();
+                    MessageBox.Show(data["law_articles"][1]["article_text"].ToString());
 
-                    MessageBox.Show(streamData);
-
-                    JObject data = JObject.Parse(streamData);
-
-                    if (data["law_articles"] != null && data["law_articles"].Any())
-                    {
-
-                        label1.Text = data["law_articles"][1]["article_text"].ToString();
-
-                        panel1.Visible = true;
-                    }
+                    //TODO: dynamicly load json data into results table
+                    label1.Text = data["law_articles"][1]["article_text"].ToString();
+                    panel1.Visible = true;
                 }
-            }
-
+                else
+                {
+                    //TODO: no results found
+                }
+            };
 
         }
 
