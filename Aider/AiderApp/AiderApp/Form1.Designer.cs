@@ -124,7 +124,7 @@
             // label1
             // 
             this.label1.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
-            this.label1.Location = new System.Drawing.Point(18, 46);
+            this.label1.Location = new System.Drawing.Point(3, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(100, 23);
             this.label1.TabIndex = 0;
