@@ -11,16 +11,17 @@ using Newtonsoft.Json.Linq;
 using System.Windows.Forms;
 using System.IO;
 using AiderApp.Controllers;
+using AiderApp.Views;
 
 namespace AiderApp
 {
     public partial class Form1 : Form
     {
+        OutputView outputView;
         public Form1()
         {
             //this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;     // Uncomment this to disable the windows menu bar
             InitializeComponent();
-            panel1.Visible = false;     // Set the text panel visibility to false while there's no text shown yet
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -40,6 +41,11 @@ namespace AiderApp
 
         private async void button1_Click(object sender, EventArgs e)
         {
+            outputView = new OutputView(this);
+            outputView.Location = this.Location;
+            outputView.Visible = true;
+            this.Visible = false;
+
             // Use this to show which options have been checked
             //string s = "";
             //for (int x = 0; x <= checkedListBox1.CheckedItems.Count - 1; x++)
@@ -48,26 +54,19 @@ namespace AiderApp
 
             // TODO: Find a proper way to handle the case of multiple checked checkboxes
             if (checkedListBox1.CheckedItems.Count == 3)
-            {
-                // Search in all categories
-            }
+            { } // Search in all categories
 
             else if (checkedListBox1.CheckedItems.Count == 2)    // If two options are checked
             {
                 if (checkedListBox1.GetItemChecked(0) && (checkedListBox1.GetItemChecked(1)))
-                {
-                    // Search in those 2 categories
-                }
+                { } // Search in those 2 categories
 
                 if (checkedListBox1.GetItemChecked(1) && (checkedListBox1.GetItemChecked(2)))
-                {
-                    // Search in those 2 categories
-                }
+                { } // Search in those 2 categories
+
 
                 if (checkedListBox1.GetItemChecked(0) && (checkedListBox1.GetItemChecked(2)))
-                {
-                    // Search in those 2 categories
-                }
+                { } // Search in those 2 categories
             }
 
             else if (checkedListBox1.CheckedItems.Count == 1)    // if just one box is checked
@@ -101,8 +100,13 @@ namespace AiderApp
                 if (data["law_articles"] != null && data["law_articles"].Any())
                 {
                     //TODO: dynamicly load json data into results table
-                    label1.Text = data["law_articles"][1]["article_text"].ToString();
-                    panel1.Visible = true;
+                    //for (int i = 0; i < data["law_articles"].Count(); i++)
+                    //{
+
+                    //}
+
+                    outputView.updateOutput(data["law_articles"][1]["article_text"].ToString());
+
                 }
                 else    // if no results are found
                 { MessageBox.Show("Geen resultaten gevonden, probeer een andere zoekopdracht!"); }
