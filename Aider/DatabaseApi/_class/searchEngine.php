@@ -15,6 +15,11 @@ class searchEngine {
         $searchstring = mysqli_real_escape_string($db->getConnection(), $searchstring);
         $searchstring = urldecode(utf8_decode($searchstring));
         
+        $db->queryDatabase("SET NAMES 'utf8'");
+        $db->queryDatabase("SET CHARACTER SET utf8");
+        $db->queryDatabase("SET SESSION collation_connection = 'utf8_unicode_ci'");
+        
+        
         //form query
         $query = "SELECT * FROM Law_Text WHERE Law_Text.article_text LIKE '%$searchstring%' LIMIT 10";
         
@@ -26,9 +31,9 @@ class searchEngine {
         //check result
         $searchResults = array();
         if ($result->num_rows > 0) {
-        	while ($row = $result->fetch_assoc()) {
+        	while ($row = $result->fetch_array(MYSQL_ASSOC)) {
         		$searchResults['law_articles'][] = $row;
-        		error_log($row['id']);
+        		error_log($row['article_text']);
                 error_log(implode(" ",$row));
         	}
         } else {
