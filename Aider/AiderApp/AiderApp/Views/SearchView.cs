@@ -46,7 +46,6 @@ namespace AiderApp
             {
                 if (data["law_articles"] != null && data["law_articles"].Any())
                 {
-                    //MessageBox.Show(data["law_articles"][1]["article_text"].ToString());
                     
                     //TODO: dynamicly load json data into results table
                     //for (int i = 0; i < data["law_articles"].Count(); i++)
@@ -59,7 +58,8 @@ namespace AiderApp
                 }
                 else
                 {
-                    //TODO: no results found
+                    //if no results are found
+                    MessageBox.Show("Geen resultaten gevonden, probeer een andere zoekopdracht!");
                 }
             };
 
