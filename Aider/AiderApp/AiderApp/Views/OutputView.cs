@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 
 namespace AiderApp.Views
 {
@@ -19,6 +20,9 @@ namespace AiderApp.Views
             this.parent = parent;
             InitializeComponent();
             this.Visible = false;
+            listView1.Visible = false;
+            //listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent); ?
+
         }
 
         //go back to search view
@@ -32,12 +36,29 @@ namespace AiderApp.Views
         //close application
         private void button2_Click(object sender, EventArgs e)
         {
-            parent.Close();
+            Close();
         }
 
-        public void updateOutput(String output)
+        public void updateOutput(JObject output)
         {
-            outputLabel.Text = output;
+            listView1.View = View.Details;
+            listView1.Columns.Add("Hoofdstuk");
+            listView1.Columns.Add("Titel");
+            listView1.Columns.Add("Text");
+            listView1.Columns.Add("Category");
+            
+            for (int i = 0; i < output["law_articles"].Count(); i++)
+            {
+                ListViewItem item = new ListViewItem(new[] { output["law_articles"][i]["chapter"].ToString(), output["law_articles"][i]["article_title"].ToString(), output["law_articles"][i]["article_text"].ToString(), "this is dummy data" }); // Creat array item which will be added to a row of the listview
+                listView1.Items.Add(item);  // Add the item
+            }
+
+            listView1.Visible = true;       // Show the listview
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // When selecting an item?
         }
     }
 }
