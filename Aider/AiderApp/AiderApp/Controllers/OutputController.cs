@@ -17,9 +17,7 @@ namespace AiderApp.Controllers
             JObject data = JObject.Parse(streamData);
 
             if (UpdateView != null)
-            {
-                UpdateView(data);
-            }
+            { UpdateView(data); }
         }
     }
 }

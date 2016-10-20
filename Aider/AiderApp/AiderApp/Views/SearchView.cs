@@ -102,11 +102,11 @@ namespace AiderApp
                     //TODO: dynamicly load json data into results table
                     //for (int i = 0; i < data["law_articles"].Count(); i++)
                     //{
-
+                    //  insert it into table row
                     //}
 
-                    outputView.updateOutput(data["law_articles"][1]["article_text"].ToString());
-
+                    outputView.updateOutput(data.ToString());
+                    // outputView.updateOutput(data["law_articles"][1]["article_text"].ToString());
                 }
                 else    // if no results are found
                 { MessageBox.Show("Geen resultaten gevonden, probeer een andere zoekopdracht!"); }

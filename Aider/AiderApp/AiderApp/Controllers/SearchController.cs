@@ -21,18 +21,14 @@ namespace AiderApp.Controllers
             AiderBackend api = new AiderBackend();
             api.JsonHandler += parseJson;
             api.GetAiderData(requestUrl);
-
         }
-
 
         private void parseJson(string streamData)
         {
             JObject data = JObject.Parse(streamData);
 
             if (UpdateView != null)
-            {
-                UpdateView(data);
-            }
+            { UpdateView(data); }
         }
 
     }
