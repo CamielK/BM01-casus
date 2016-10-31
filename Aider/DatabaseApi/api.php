@@ -1,10 +1,5 @@
 <?php
 
-    /* This php page serves as the main entry for backend API calls
-        Requests should be targeted at URL: 
-        'http://SERVER_IP/bm01/api.php/MAIN_ARG/SUB_ARGUMENTS'
-    */
-
     //*** add default json response headers
     header("Access-Control-Allow-Origin: *");
     header('Content-Type: application/json');
@@ -19,18 +14,48 @@
     //*** execute API function depending on main argument
     $mainArg = array_shift($request);
     
+    
+    
+    // search
     if ($mainArg==='search') {
         
         //get searchstring parameter
         $searchstring = array_shift($request);
         
-        include_once('_class/searchEngine.php');
+        include_once('/home/bm01/api/_class/searchEngine.php');
         $search_engine = new searchEngine();
         
         //return search output
         echo $result = $search_engine->searchLawTexts($searchstring);
         
         
+    // summary answer
+    } else if ($mainArg==='answer') {
+        
+        //get searchstring parameter
+        $searchstring = array_shift($request);
+        
+        include_once('/home/bm01/api/_class/searchEngine.php');
+        $search_engine = new searchEngine();
+        
+        //return search output
+        echo $result = $search_engine->getSummaryFromLawTexts($searchstring);
+        
+    
+    // get specific article text
+    } else if ($mainArg==='article') {
+        
+        //get searchstring parameter
+        $article_id = array_shift($request);
+        
+        include_once('/home/bm01/api/_class/searchEngine.php');
+        $search_engine = new searchEngine();
+        
+        //return search output
+        echo $result = $search_engine->getArticle($article_id);
+        
+        
+    // test
     } else if ($mainArg==='test') {
         $arr = array('A' => 1, 'B' => 2, 'C' => 3, 'Response' => true);
         echo json_encode($arr);
@@ -43,4 +68,6 @@
         $arr = array('Error' => $errorMsg, 'Response' => false);
         echo json_encode($arr);
     }
+
+
 ?>
