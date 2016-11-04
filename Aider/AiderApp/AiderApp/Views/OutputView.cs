@@ -59,6 +59,7 @@ namespace AiderApp.Views
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             // When selecting an item?
+            new ArticleView(this, listView1, listView1.SelectedIndices[0]);
         }
     }
 }

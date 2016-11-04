@@ -64,6 +64,12 @@
   <ItemGroup>
     <Compile Include="Controllers\OutputController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
+    <Compile Include="Views\ArticleView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ArticleView.Designer.cs">
+      <DependentUpon>ArticleView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\OutputView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -79,6 +85,9 @@
     <Compile Include="Helpers\AiderBackend.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Views\ArticleView.resx">
+      <DependentUpon>ArticleView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\OutputView.resx">
       <DependentUpon>OutputView.cs</DependentUpon>
     </EmbeddedResource>
