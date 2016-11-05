@@ -42,10 +42,10 @@ namespace AiderApp.Views
         public void updateOutput(JObject output)
         {
             listView1.View = View.Details;
-            listView1.Columns.Add("Hoofdstuk");
-            listView1.Columns.Add("Titel");
-            listView1.Columns.Add("Text");
-            listView1.Columns.Add("Category");
+            listView1.Columns.Add("Hoofdstuk").Width = 80;
+            listView1.Columns.Add("Titel").Width = 75;
+            listView1.Columns.Add("Text").Width = 300;
+            listView1.Columns.Add("Category").Width = 75;
             
             for (int i = 0; i < output["law_articles"].Count(); i++)
             {

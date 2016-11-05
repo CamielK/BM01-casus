@@ -20,6 +20,8 @@ namespace AiderApp
         OutputView outputView;
         public Form1()
         {
+            //this.AcceptButton = button1;                                          // Does not seem to work
+            //this.CancelButton = button2;                                          // Does not seem to work
             //this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;     // Uncomment this to disable the windows menu bar
             InitializeComponent();
         }
