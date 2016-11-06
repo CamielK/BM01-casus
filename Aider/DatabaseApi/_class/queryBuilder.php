@@ -20,7 +20,7 @@ class queryBuilder {
     			$row = $this->normalizeChars($row);
     			$row_contents = explode(";",$row);
     			
-    			error_log($row);
+    			//error_log($row);
     			
     			//find rows that matches the query
     			foreach ($row_contents as $word) {
@@ -44,6 +44,46 @@ class queryBuilder {
 			return [$query_word];
 		}
 		
+		
+	}
+	
+	
+	//returns true if the given word is a stopword
+	public function isStopword($query_word) {
+	       
+	  $query_word = $this->normalizeChars($query_word);
+		
+		//open stopwords list
+		$stopwords_file = $this->utf8_fopen_read("/home/bm01/api/resources/stopwords.txt") or die("Unable to open file!");
+		
+		//loop stopwords untill finished or untill a match was found
+		while(($data = fgetcsv($stopwords_file, 1000, ",")) && !isset($isStopword)) {
+			
+			foreach($data as $row) {
+				$row = str_replace("\n", "", $row);
+   			$row = $this->normalizeChars($row);
+   			
+   			//echo $row . PHP_EOL;
+   			
+   			if (strpos($row, $query_word) !== false) {
+   			       $isStopword = true;
+   			       break;
+   			}
+   			
+   			if (isset($isStopword)) {break;}
+			}
+
+		}
+		
+		
+		//close synonym list and return a list of words that are synonyms for the query
+		fclose($stopwords_file);
+		
+		if (isset($isStopword)) {
+			return true;
+		} else {
+			return false;
+		}
 		
 	}
 	

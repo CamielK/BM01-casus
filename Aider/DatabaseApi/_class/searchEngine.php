@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 class searchEngine {
     
@@ -71,25 +71,105 @@ class searchEngine {
     //return a query-focused summary from the documents that match the search string
     public function getSummaryFromLawTexts($searchstring) {
     	
+    	//init database connection
+        include_once('dbConnection.php');
+        $db = new databaseConnection("BM01");
+        $db->queryDatabase("SET NAMES 'utf8'");
+        $db->queryDatabase("SET CHARACTER SET utf8");
+        $db->queryDatabase("SET SESSION collation_connection = 'utf8_unicode_ci'");
+        
+        //check search string format (url decode and SQL injections)
+        $searchstring = mysqli_real_escape_string($db->getConnection(), $searchstring);
+        $searchstring = urldecode(utf8_decode($searchstring));
+        
+    	echo "- original query: " . json_encode($searchstring) . PHP_EOL . PHP_EOL;
+    	
     	//build query
     	include_once('queryBuilder.php');
     	$query_builder = new queryBuilder();
     	
     	//split individual query words and get synonyms for each word
     	$query_array = explode(" ", $searchstring);
+    	$synonym_array = array();
     	foreach ($query_array as $key => $query_word) {
-    	    $query_array[$key] = $query_builder->getSynonym($query_word); 
+    	   
+    	    if (!$query_builder->isStopword($query_word)) {
+    	        $synonym_array[] = $query_builder->getSynonym($query_word);
+    	    }
     	    
     	    //TODO: assign a weight to each query word
+    	    //TODO: remove otherwise unnecesarry
     	}
-    	
+    	echo "- synonym array: " . json_encode($synonym_array) . PHP_EOL . PHP_EOL;
     	
     	
     	
     	//get documents
     	
-    	    //query database for all query words
-    	    //return top 100 most relevant articles
+	    //query database for all query words
+	    $query_string = "";
+	    foreach ($synonym_array as $query_word) {
+	        $query_string .= implode(" ", $query_word) . " ";
+	    }
+	    
+	    echo "- query string: " . $query_string . PHP_EOL . PHP_EOL;
+	    
+	    //return top 100 most relevant articles
+    	    
+    	
+    	
+    	
+    	
+            
+        $query = "
+            SELECT *
+            FROM (
+                SELECT *, 
+                    MATCH (article_text) 
+                    AGAINST ('$query_string') 
+                    as relevance 
+                FROM Law_Text) as derived_table
+            WHERE derived_table.relevance > 0
+            ORDER BY derived_table.relevance DESC
+            LIMIT 100";
+        
+        echo "- SQL query: " . $query . PHP_EOL . PHP_EOL;
+        
+        //error_log($query);
+        
+        //do query
+        $result = $db->queryDatabase($query);
+
+        //check result
+        $searchResults = array();
+        if ($result->num_rows > 0) {
+        	while ($row = $result->fetch_array(MYSQL_ASSOC)) {
+        		$searchResults['law_articles'][] = $row;
+        		//error_log($row['article_text']);
+                //error_log(implode(" ",$row));
+        	}
+        } else {
+            $searchResults['error'] = 'Did not find any resources matching the search string.';
+        }
+        
+        
+        //summarize the results
+        $source_text = '';
+        foreach ($searchResults['law_articles'] as $article) {
+            $source_text .= "\n\n " . $article['article_text'];
+        }
+        
+        
+        
+        //close connection
+        $db->closeConnection();
+    
+        echo PHP_EOL . PHP_EOL . " - JSON output: "; 
+    
+        //return summary json
+        return json_encode($searchResults);
+    	
+    	
     	
     	
     	
@@ -124,84 +204,6 @@ class searchEngine {
     	
     	
     	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	return json_encode($query_array);
-    	
-        //call to database connection
-        include_once('dbConnection.php');
-        $db = new databaseConnection("BM01");
-        
-        //check search string format (url decode and SQL injections)
-        $searchstring = mysqli_real_escape_string($db->getConnection(), $searchstring);
-        $searchstring = urldecode(utf8_decode($searchstring));
-        
-        $db->queryDatabase("SET NAMES 'utf8'");
-        $db->queryDatabase("SET CHARACTER SET utf8");
-        $db->queryDatabase("SET SESSION collation_connection = 'utf8_unicode_ci'");
-        
-            
-        $query = "
-            SELECT *
-            FROM (
-                SELECT *, 
-                    MATCH (article_text) 
-                    AGAINST ('$searchstring') 
-                    as relevance 
-                FROM Law_Text) as derived_table
-            WHERE derived_table.relevance > 0
-            ORDER BY derived_table.relevance DESC
-            LIMIT 100";
-            
-        
-        error_log($query);
-        
-        //do query
-        $result = $db->queryDatabase($query);
-
-        //check result
-        $searchResults = array();
-        if ($result->num_rows > 0) {
-        	while ($row = $result->fetch_array(MYSQL_ASSOC)) {
-        		$searchResults['law_articles'][] = $row;
-        		error_log($row['article_text']);
-                error_log(implode(" ",$row));
-        	}
-        } else {
-            $searchResults['error'] = 'Did not find any resources matching the search string.';
-        }
-        
-        
-        //summarize the results
-        $source_text = '';
-        foreach ($searchResults['law_articles'] as $article) {
-            $source_text .= "\n\n " . $article['article_text'];
-        }
-        
-        include_once("summarizer.php");
-        
-        $st = new Summarizer();
-        $summary = $st->get_summary($source_text);
-    	$searchResults['summary'] = $summary;
-    	$searchResults['original'] = $source_text;
-        
-        
-        
-        //close connection
-        $db->closeConnection();
-    
-        var_dump($st->how_we_did());
-    
-        //return summary json
-        return json_encode($searchResults);
     }
     
     
