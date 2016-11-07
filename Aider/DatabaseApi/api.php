@@ -32,6 +32,9 @@
     // summary answer
     } else if ($mainArg==='answer') {
         
+        //https://www.tools4noobs.com/summarize/script/
+        //https://github.com/freekrai/summarizer/blob/master/demo.php
+        
         //get searchstring parameter
         $searchstring = array_shift($request);
         
@@ -39,7 +42,7 @@
         $search_engine = new searchEngine();
         
         //return search output
-        echo $result = $search_engine->getSummaryFromLawTexts($searchstring);
+        echo $result = $search_engine->getSummaryFromLawTexts($searchstring, 10);
         
     
     // get specific article text

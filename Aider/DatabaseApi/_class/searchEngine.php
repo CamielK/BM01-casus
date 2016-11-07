@@ -69,26 +69,24 @@ class searchEngine {
     
     
     //return a query-focused summary from the documents that match the search string
-    public function getSummaryFromLawTexts($searchstring) {
+    public function getSummaryFromLawTexts($searchstring, $max_length) {
     	
-    	//init database connection
+    	// > init database connection
         include_once('dbConnection.php');
         $db = new databaseConnection("BM01");
         $db->queryDatabase("SET NAMES 'utf8'");
         $db->queryDatabase("SET CHARACTER SET utf8");
         $db->queryDatabase("SET SESSION collation_connection = 'utf8_unicode_ci'");
         
-        //check search string format (url decode and SQL injections)
+        // > check search string format (url decode and SQL injections)
         $searchstring = mysqli_real_escape_string($db->getConnection(), $searchstring);
         $searchstring = urldecode(utf8_decode($searchstring));
-        
     	echo "- original query: " . json_encode($searchstring) . PHP_EOL . PHP_EOL;
     	
-    	//build query
+    	// > build query
+    	//    - split individual query words and get synonyms for each word
     	include_once('queryBuilder.php');
     	$query_builder = new queryBuilder();
-    	
-    	//split individual query words and get synonyms for each word
     	$query_array = explode(" ", $searchstring);
     	$synonym_array = array();
     	foreach ($query_array as $key => $query_word) {
@@ -98,29 +96,19 @@ class searchEngine {
     	    }
     	    
     	    //TODO: assign a weight to each query word
-    	    //TODO: remove otherwise unnecesarry
+    	    //TODO: remove otherwise unnecesarry words
     	}
     	echo "- synonym array: " . json_encode($synonym_array) . PHP_EOL . PHP_EOL;
     	
     	
     	
-    	//get documents
-    	
-	    //query database for all query words
+    	// > get documents
+    	//    query database and return top 100 most relevant articles
 	    $query_string = "";
 	    foreach ($synonym_array as $query_word) {
 	        $query_string .= implode(" ", $query_word) . " ";
 	    }
-	    
 	    echo "- query string: " . $query_string . PHP_EOL . PHP_EOL;
-	    
-	    //return top 100 most relevant articles
-    	    
-    	
-    	
-    	
-    	
-            
         $query = "
             SELECT *
             FROM (
@@ -132,79 +120,62 @@ class searchEngine {
             WHERE derived_table.relevance > 0
             ORDER BY derived_table.relevance DESC
             LIMIT 100";
-        
         echo "- SQL query: " . $query . PHP_EOL . PHP_EOL;
-        
-        //error_log($query);
-        
-        //do query
         $result = $db->queryDatabase($query);
-
-        //check result
         $searchResults = array();
         if ($result->num_rows > 0) {
         	while ($row = $result->fetch_array(MYSQL_ASSOC)) {
         		$searchResults['law_articles'][] = $row;
-        		//error_log($row['article_text']);
-                //error_log(implode(" ",$row));
         	}
         } else {
             $searchResults['error'] = 'Did not find any resources matching the search string.';
         }
         
         
-        //summarize the results
+        
+        
+        // >>> summarize the results <<<
         $source_text = '';
         foreach ($searchResults['law_articles'] as $article) {
             $source_text .= "\n\n " . $article['article_text'];
         }
+    	$searchResults['original'] = $source_text;
         
+	    //Sentence segmentation
+        include_once('textAnalyzer.php');
+        $txt_analyzer = new TextAnalyzer();
+        $sentences = $txt_analyzer->getSentences($source_text);
         
+        //Simplify the sentences
+        foreach ($sentences as $key => $sentence) {
+            $sentences[$key] = $txt_analyzer->simplifySentence($sentence);
+            //echo '_'.$sentences[$key] .'_'.PHP_EOL;
+        }
+        
+        //score each sentence
+        foreach ($sentences as $key => $sentence) {
+            $sentence_score = $txt_analyzer->getSentenceLikelihoodRatio($sentence);
+            $sentences[$key] = [$sentence, $sentence_score];
+        }
+        
+        //iteratively create summary based on highest scoring and non redundant sentences
+        $summary_sentences = array();
+        while ((count($summary_sentences) < $max_length) && (count($summary_sentences) < $sentences)) {
+            $summary_sentences[] = $txt_analyzer->getBestSummarySentence($sentences, $summary_sentences);
+        }
+        $searchResults['summary'] = $summary_sentences;
         
         //close connection
         $db->closeConnection();
     
-        echo PHP_EOL . PHP_EOL . " - JSON output: "; 
-    
         //return summary json
+        echo PHP_EOL . PHP_EOL . " - JSON output: ";
         return json_encode($searchResults);
     	
     	
     	
-    	
-    	
-    	
-    	//create summary
-	//     -	Sentence segmentation:
-    //         o	Pick a set of sentences from multiple documents
-    //     -	Simplify the sentences
-    //         o	(Zajic et al. (2007), Controy et al. (2006), Vanderwende et al. (2007))
-    //         o	Parse sentences, use rules to decide which modifiers to prune. Machine learning methods can be used aswell
-    //     -	Sentence extraction:
-    //         o	log-likelihood ratio (LLR)
-    //         o	Maximal Marginal Relevance (MMR), avoid redundancy
-    //             	(Jaime Cardonell and Jade Goldstein, The Use of MMR, SIGIR-98)
-    //             	Method: Iteratively (greedily) choose the best sentence to insert in the summary so far:
-    //                 •	Relevant: Maximally relevant to the user’s query (high cosine similarity to query)
-    //                 •	Novel: Minimally redundant with the summary so far (low cosine similarity to summary so far) 
-    //             	Stop when desired length of summary is reached
-    //         o	LLR + MMR
-    //             	Combine LLR and MMR to select non-redundant yet informative sentences:
-    //                 1.	Score each sentence based on LLR (including query words)
-    //                 2.	Include the sentence with highest score in the summary
-    //                 3.	Iteratively add into the summary high-scoring sentences that are not redundant with summary so far
-    //     -	Information Ordering
-    //         o	Chronological ordering: order sentences by the date of the document
-    //         o	Coherence:
-    //             	Choose orderings that make neighboring sentences similar (by cosine).
-    //             	Choose orderings in which neighboring sentences discuss the same entity (Barzilay and Lapata 2007)
-    //         o	Topical ordering: learn the ordering of topics in the source documents
-
-    	
-    	
-    	
-    	
     }
+    
     
     
     //return the law article that matches the given article id
