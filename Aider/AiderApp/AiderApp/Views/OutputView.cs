@@ -14,6 +14,8 @@ namespace AiderApp.Views
     public partial class OutputView : Form
     {
         Form1 parent;
+        ArticleView av;
+        JObject output;
 
         public OutputView(Form1 parent)
         {
@@ -22,7 +24,7 @@ namespace AiderApp.Views
             this.Visible = false;
             listView1.Visible = false;
             //listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent); ?
-
+            av = new ArticleView(this);
         }
 
         //go back to search view
@@ -42,23 +44,28 @@ namespace AiderApp.Views
         public void updateOutput(JObject output)
         {
             listView1.View = View.Details;
+
             listView1.Columns.Add("Hoofdstuk").Width = 80;
             listView1.Columns.Add("Titel").Width = 75;
             listView1.Columns.Add("Text").Width = 300;
             listView1.Columns.Add("Category").Width = 75;
+            
             
             for (int i = 0; i < output["law_articles"].Count(); i++)
             {
                 ListViewItem item = new ListViewItem(new[] { output["law_articles"][i]["chapter"].ToString(), output["law_articles"][i]["article_title"].ToString(), output["law_articles"][i]["article_text"].ToString(), "this is dummy data" }); // Creat array item which will be added to a row of the listview
                 listView1.Items.Add(item);  // Add the item
             }
-
+            this.output = output;
             listView1.Visible = true;       // Show the listview
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // When selecting an item?
+            if (listView1.SelectedIndices.Count != 0)
+            {
+                av.updateOutput(output, listView1.SelectedIndices[0]);
+            }
         }
     }
 }
