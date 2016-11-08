@@ -57,6 +57,7 @@
             this.textBox1.Location = new System.Drawing.Point(13, 47);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(574, 370);
             this.textBox1.TabIndex = 2;
             // 
@@ -68,6 +69,7 @@
             this.button1.TabIndex = 3;
             this.button1.Text = "Sluiten";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // ArticleView
             // 
@@ -80,6 +82,7 @@
             this.Controls.Add(this.label1);
             this.Name = "ArticleView";
             this.Text = "ArticleView";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ArticleView_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

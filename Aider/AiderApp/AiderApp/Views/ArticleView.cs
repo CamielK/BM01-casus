@@ -15,31 +15,34 @@ namespace AiderApp.Views
     {
         Form parent;
 
-        public ArticleView(Form parent, ListView lv, int i)
+        public ArticleView(Form parent)
         {
             this.parent = parent;
             InitializeComponent();
-            //string ARTICLE_ID = ?
-            //string url = "http://37.97.195.239/bm01/api.php/article/" + ARTICLE_ID;
-            updateOutput(lv, i);
+            this.Visible = false;
+        }
 
+        public void updateOutput(JObject output, int i)
+        {
+            label1.Text = output["law_articles"][i]["chapter"].ToString();
+            label2.Text = output["law_articles"][i]["article_title"].ToString();
+            textBox1.Text = output["law_articles"][i]["article_text"].ToString();
             this.Visible = true;
             this.TopMost = true;
+            this.Activate();
         }
 
-        public void updateOutput(ListView lv, int i)
+        private void button1_Click_1(object sender, EventArgs e)
         {
-            label1.Text = "test1";
-            label2.Text = "test2";
-            textBox1.Text = "test3";
-            //label1.Text = lv.GetItemAt(0, i).ToString();
-            //label2.Text = lv.GetItemAt(1, i).ToString();
-            //textBox1.Text = lv.GetItemAt(2, i).ToString();
+            this.Visible = false;
+            this.Hide();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void ArticleView_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Close();
+            this.Visible = false;
+            this.Hide();
+            e.Cancel = true;
         }
     }
 }
