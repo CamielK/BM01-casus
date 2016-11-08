@@ -129,5 +129,19 @@ namespace AiderApp
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         { }
+
+        private void textBox1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                button1.PerformClick();
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                Close();
+                e.Handled = true;
+            }
+        }
     }
 }
