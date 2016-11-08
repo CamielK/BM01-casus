@@ -13,7 +13,7 @@ class TextAnalyzer {
 		// }
 		// return explode(". ", $strcontent);
 		
-		include_once('sentence.php');
+		include_once('helpers/sentence.php');
 		$sentence = new sentence();
 		
 		return $sentence->split($text);
@@ -32,7 +32,7 @@ class TextAnalyzer {
 	}
 
 
-	public function getSentenceLikelihoodRatio($sentence) {
+	public function getSentenceWeight($sentence, $background_corpus, $query_array) {
 		//Conroy, Schlesinger and O’Leary 2006
 		// -	Choose words that are informative either
 		// 		o	By log-likelihood ratio (LLR)
@@ -45,15 +45,57 @@ class TextAnalyzer {
 		// 			?	1 if the LLR ratio is positive, 1 if the word is in the query or 0 otherwise
 		// -	Weigh a sentence by weight of its words
 		// 		o	Weight(sentence) =  sum(weight(words))
+		//
+		//	http://www.ir-facility.org/scoring-and-ranking-techniques-tf-idf-term-weighting-and-cosine-similarity 
+		//	TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document).
+		//	IDF(t) = log_e(Total number of documents / Number of documents with term t in it).
+
 
 		//TODO
-		return 10;
-
+		$score = 0;
+		
+		//split sentence into words
+		$words = explode(" ", $sentence);
+		
+		$term_in_doc = 0;
+		foreach ($query_array as $query_word) {
+			foreach ($query_word as $synonym) {
+				
+				
+				$term_in_doc += substr_count($sentence, $synonym);
+			}
+		}
+		
+		if ($term_in_doc !== 0) {
+			
+			$query_term_frequency = $term_in_doc / count($words);
+			
+			foreach ($words as $word) {
+				
+				$matching_docs = 0;
+				foreach ($background_corpus as $document) {
+					if (is_string($word) && is_string($document) && ($word !== '')) {
+						if (strpos($document, $word) !== false) {
+							$matching_docs += 1;
+						}
+					}
+				}
+				
+				$document_frequency = count($background_corpus) / $matching_docs;
+				$inversed_df = log10($document_frequency);
+				
+				$score += $query_term_frequency / $inversed_df;
+			}
+			
+			
+		}
+		
+		return $score;
 	}
 	
 	
 	
-  public function getBestSummarySentence($sentences, $summary_sentences){
+  public function getBestSummarySentence($sentences, $summary_sentences) {
   	//return the element in $sentences with the highest likelihood ratio AND the least redundancy to the current $summary_sentences
     // o	Maximal Marginal Relevance (MMR), avoid redundancy
     //     ?	(Jaime Cardonell and Jade Goldstein, The Use of MMR, SIGIR-98)
@@ -61,8 +103,20 @@ class TextAnalyzer {
     //         •	Relevant: Maximally relevant to the user’s query (high cosine similarity to query)
     //         •	Novel: Minimally redundant with the summary so far (low cosine similarity to summary so far) 
   	
+  	//http://www.ir-facility.org/scoring-and-ranking-techniques-tf-idf-term-weighting-and-cosine-similarity
+  	
   	//TODO
-  	return $sentences[0][0];
+  	
+  	$highest_score = 0;
+  	$best_sentence = '';
+  	foreach ($sentences as $sentence) {
+  		if (($sentence[1] > $highest_score) && !(in_array($sentence[0], $summary_sentences))) {
+  			$highest_score = $sentence[1];
+  			$best_sentence = $sentence[0];
+  		}
+  	}
+  	
+  	return $best_sentence;
   	
   }
 	

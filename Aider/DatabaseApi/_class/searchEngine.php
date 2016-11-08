@@ -154,9 +154,10 @@ class searchEngine {
         
         //score each sentence
         foreach ($sentences as $key => $sentence) {
-            $sentence_score = $txt_analyzer->getSentenceLikelihoodRatio($sentence);
+            $sentence_score = $txt_analyzer->getSentenceWeight($sentence, $sentences, $synonym_array);
             $sentences[$key] = [$sentence, $sentence_score];
         }
+        //var_dump($sentences);
         
         //iteratively create summary based on highest scoring and non redundant sentences
         $summary_sentences = array();
@@ -164,6 +165,7 @@ class searchEngine {
             $summary_sentences[] = $txt_analyzer->getBestSummarySentence($sentences, $summary_sentences);
         }
         $searchResults['summary'] = $summary_sentences;
+        var_dump($summary_sentences);
         
         //close connection
         $db->closeConnection();
