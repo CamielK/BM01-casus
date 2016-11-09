@@ -81,7 +81,7 @@ class searchEngine {
         // > check search string format (url decode and SQL injections)
         $searchstring = mysqli_real_escape_string($db->getConnection(), $searchstring);
         $searchstring = urldecode(utf8_decode($searchstring));
-    	echo "- original query: " . json_encode($searchstring) . PHP_EOL . PHP_EOL;
+    	//echo "- original query: " . json_encode($searchstring) . PHP_EOL . PHP_EOL;
     	
     	// > build query
     	//    - split individual query words and get synonyms for each word
@@ -98,7 +98,7 @@ class searchEngine {
     	    //TODO: assign a weight to each query word
     	    //TODO: remove otherwise unnecesarry words
     	}
-    	echo "- synonym array: " . json_encode($synonym_array) . PHP_EOL . PHP_EOL;
+    	//echo "- synonym array: " . json_encode($synonym_array) . PHP_EOL . PHP_EOL;
     	
     	
     	
@@ -108,19 +108,21 @@ class searchEngine {
 	    foreach ($synonym_array as $query_word) {
 	        $query_string .= implode(" ", $query_word) . " ";
 	    }
-	    echo "- query string: " . $query_string . PHP_EOL . PHP_EOL;
+	    //echo "- query string: " . $query_string . PHP_EOL . PHP_EOL;
         $query = "
-            SELECT *
+            SELECT derived_table.*, Category.category_name AS category, Law_Book.book_title AS law_book
             FROM (
                 SELECT *, 
                     MATCH (article_text) 
                     AGAINST ('$query_string') 
                     as relevance 
                 FROM Law_Text) as derived_table
+            JOIN Category ON derived_table.category_id = Category.id
+            JOIN Law_Book ON derived_table.lawbook_id = Law_Book.id
             WHERE derived_table.relevance > 0
             ORDER BY derived_table.relevance DESC
             LIMIT 100";
-        echo "- SQL query: " . $query . PHP_EOL . PHP_EOL;
+        //echo "- SQL query: " . $query . PHP_EOL . PHP_EOL;
         $result = $db->queryDatabase($query);
         $searchResults = array();
         if ($result->num_rows > 0) {
@@ -164,14 +166,14 @@ class searchEngine {
         while ((count($summary_sentences) < $max_length) && (count($summary_sentences) < $sentences)) {
             $summary_sentences[] = $txt_analyzer->getBestSummarySentence($sentences, $summary_sentences);
         }
-        $searchResults['summary'] = $summary_sentences;
-        var_dump($summary_sentences);
+        $searchResults['summary_sentences'] = $summary_sentences;
+        //var_dump($summary_sentences);
         
         //close connection
         $db->closeConnection();
     
         //return summary json
-        echo PHP_EOL . PHP_EOL . " - JSON output: ";
+        //echo PHP_EOL . PHP_EOL . " - JSON output: ";
         return json_encode($searchResults);
     	
     	
