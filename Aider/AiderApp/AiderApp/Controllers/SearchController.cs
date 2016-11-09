@@ -17,7 +17,7 @@ namespace AiderApp.Controllers
 
         public async void SearchLaws(String searchString)
         {
-            var requestUrl = "search/" + searchString;
+            var requestUrl = "answer/" + searchString;
             AiderBackend api = new AiderBackend();
             api.JsonHandler += parseJson;
             api.GetAiderData(requestUrl);

@@ -25,6 +25,8 @@ namespace AiderApp.Views
             listView1.Visible = false;
             //listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent); ?
             av = new ArticleView(this);
+
+            resetLoadingMessage();
         }
 
         //go back to search view
@@ -41,23 +43,47 @@ namespace AiderApp.Views
             Close();
         }
 
+        public void resetLoadingMessage()
+        {
+            outputLabel2.Text = "Finding an answer to your question.. this may take a while";
+            outputLabel3.Text = "Finding an answer to your question.. this may take a while";
+            outputLabel3.Visible = true;
+            outputLabel2.Visible = true;
+        }
+
         public void updateOutput(JObject output)
         {
-            listView1.View = View.Details;
+            //display summary
+            outputLabel2.Visible = false;
+            String summary = "";
+            for (int i = 0; i < output["summary_sentences"].Count(); i++)
+            {
+                summary += output["summary_sentences"][i];
+            }
+            answerOutputBox.Text = summary;
 
-            listView1.Columns.Add("Hoofdstuk").Width = 80;
-            listView1.Columns.Add("Titel").Width = 75;
+
+
+            //display sources
+            listView1.View = View.Details;
+            outputLabel3.Visible = false;
+
+            //create sources list table headers
+            listView1.Columns.Add("Hoofdstuk").Width = 100;
+            listView1.Columns.Add("Titel").Width = 90;
             listView1.Columns.Add("Text").Width = 300;
-            listView1.Columns.Add("Category").Width = 75;
+            listView1.Columns.Add("Wetboek").Width = 150;
             
-            
+            //for each article returned from the backend, add an item to the sources list
             for (int i = 0; i < output["law_articles"].Count(); i++)
             {
-                ListViewItem item = new ListViewItem(new[] { output["law_articles"][i]["chapter"].ToString(), output["law_articles"][i]["article_title"].ToString(), output["law_articles"][i]["article_text"].ToString(), "this is dummy data" }); // Creat array item which will be added to a row of the listview
+                ListViewItem item = new ListViewItem(new[] { output["law_articles"][i]["chapter"].ToString(), output["law_articles"][i]["article_title"].ToString(), output["law_articles"][i]["article_text"].ToString(), output["law_articles"][i]["law_book"].ToString() }); // Creat array item which will be added to a row of the listview
                 listView1.Items.Add(item);  // Add the item
             }
-            this.output = output;
             listView1.Visible = true;       // Show the listview
+
+            //save the output for future use (article views)
+            this.output = output;
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
@@ -66,6 +92,16 @@ namespace AiderApp.Views
             {
                 av.updateOutput(output, listView1.SelectedIndices[0]);
             }
+        }
+
+        private void outputLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
