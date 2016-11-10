@@ -58,7 +58,7 @@ namespace AiderApp.Views
             String summary = "";
             for (int i = 0; i < output["summary_sentences"].Count(); i++)
             {
-                summary += output["summary_sentences"][i];
+                summary += output["summary_sentences"][i] + Environment.NewLine + Environment.NewLine;
             }
             answerOutputBox.Text = summary;
 
@@ -69,10 +69,10 @@ namespace AiderApp.Views
             outputLabel3.Visible = false;
 
             //create sources list table headers
-            listView1.Columns.Add("Hoofdstuk").Width = 100;
-            listView1.Columns.Add("Titel").Width = 90;
+            listView1.Columns.Add("Hoofdstuk").Width = 130;
+            listView1.Columns.Add("Titel").Width = 110;
             listView1.Columns.Add("Text").Width = 300;
-            listView1.Columns.Add("Wetboek").Width = 150;
+            listView1.Columns.Add("Wetboek").Width = 160;
             
             //for each article returned from the backend, add an item to the sources list
             for (int i = 0; i < output["law_articles"].Count(); i++)
