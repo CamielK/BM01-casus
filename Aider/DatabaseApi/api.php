@@ -32,17 +32,16 @@
     // summary answer
     } else if ($mainArg==='answer') {
         
-        //https://www.tools4noobs.com/summarize/script/
-        //https://github.com/freekrai/summarizer/blob/master/demo.php
-        
-        //get searchstring parameter
+        //get searchstring parameters
         $searchstring = array_shift($request);
+        $category_list = array_shift($request);
+        $category_array = explode("+", $category_list);
         
         include_once('/home/bm01/api/_class/searchEngine.php');
         $search_engine = new searchEngine();
         
         //return search output
-        echo $result = $search_engine->getSummaryFromLawTexts($searchstring, 10);
+        echo $result = $search_engine->getSummaryFromLawTexts($searchstring, 6, $category_array);
         
     
     // get specific article text

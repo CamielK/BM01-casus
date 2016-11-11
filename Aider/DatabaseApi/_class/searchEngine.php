@@ -69,7 +69,7 @@ class searchEngine {
     
     
     //return a query-focused summary from the documents that match the search string
-    public function getSummaryFromLawTexts($searchstring, $max_length) {
+    public function getSummaryFromLawTexts($searchstring, $max_length, $category_list) {
     	
     	// > init database connection
         include_once('dbConnection.php');
@@ -95,8 +95,6 @@ class searchEngine {
     	        $synonym_array[] = $query_builder->getSynonym($query_word);
     	    }
     	    
-    	    //TODO: assign a weight to each query word
-    	    //TODO: remove otherwise unnecesarry words
     	}
     	//echo "- synonym array: " . json_encode($synonym_array) . PHP_EOL . PHP_EOL;
     	
@@ -109,6 +107,14 @@ class searchEngine {
 	        $query_string .= implode(" ", $query_word) . " ";
 	    }
 	    //echo "- query string: " . $query_string . PHP_EOL . PHP_EOL;
+	    
+	    //category string
+	    $category_string = "";
+	    foreach ($category_list as $category) {
+	        $category_string .= "'" . $category . "',  ";
+	    }
+	    $category_string .= "''";
+	    
         $query = "
             SELECT derived_table.*, Category.category_name AS category, Law_Book.book_title AS law_book
             FROM (
@@ -120,6 +126,7 @@ class searchEngine {
             JOIN Category ON derived_table.category_id = Category.id
             JOIN Law_Book ON derived_table.lawbook_id = Law_Book.id
             WHERE derived_table.relevance > 0
+            And Category.category_name in (".$category_string.")
             ORDER BY derived_table.relevance DESC
             LIMIT 100";
         //echo "- SQL query: " . $query . PHP_EOL . PHP_EOL;
